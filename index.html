@@ -7809,6 +7809,33 @@ document.addEventListener('DOMContentLoaded', function() {
   let horizontalDetected = false;
   let animationFrameId = null;
 
+  // Функция для обновления индикатора навигации
+  function updateNavIndicator(pageElement) {
+    const pageToNavMap = {
+      'main-page': document.getElementById('treasure-nav-item'),
+      'cabinet-page': document.getElementById('cabinet-nav-item'),
+      'storage-page': document.getElementById('storage-nav-item')
+    };
+    
+    const activeNavItem = pageToNavMap[pageElement.id];
+    
+    if (activeNavItem) {
+      // Удаляем активное состояние со всех элементов
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        const indicator = item.querySelector('.active-indicator');
+        if (indicator) indicator.remove();
+      });
+      
+      // Добавляем активное состояние к текущему элементу
+      activeNavItem.classList.add('active');
+      const indicator = document.createElement('div');
+      indicator.className = 'active-indicator';
+      activeNavItem.appendChild(indicator);
+    }
+  }
+
   // Добавляем стили для отключения масштабирования и настройки свайпов
   const swipeStyles = `
     body, .page-container { 
@@ -7931,6 +7958,10 @@ document.addEventListener('DOMContentLoaded', function() {
       nextPage.classList.remove("swipeable-page", "no-transition", "pe-none");
       nextPage.style.transform = "";
       nextPage.style.zIndex = "";
+      
+      // Обновляем индикатор навигации после успешного свайпа
+      updateNavIndicator(nextPage);
+      
       activePage = nextPage;
       nextPage = null;
     }
@@ -8080,6 +8111,12 @@ document.addEventListener('DOMContentLoaded', function() {
       clearAfterCancel();
     }
   }, { passive: true });
+
+  // Инициализируем индикатор при загрузке страницы
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = getCurrentPage();
+    updateNavIndicator(currentPage);
+  });
 
 })();
 </script>
